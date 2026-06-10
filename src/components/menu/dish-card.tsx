@@ -1,8 +1,8 @@
-import { UtensilsCrossed } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
 import { DishTags } from "@/components/menu/dish-tags";
+import { ImagePlaceholder } from "@/components/menu/image-placeholder";
 import { Card, CardContent } from "@/components/ui/card";
 import { formatPrice } from "@/lib/utils";
 import type { DishWithCategory } from "@/types";
@@ -11,7 +11,7 @@ export function DishCard({ dish }: { dish: DishWithCategory }) {
   return (
     <Link href={`/dishes/${dish.id}`} className="group">
       <Card className="h-full gap-0 overflow-hidden rounded-2xl border-border/60 py-0 shadow-md shadow-black/30 transition-all duration-300 group-hover:border-primary/40 group-hover:shadow-xl group-hover:shadow-black/40">
-        <div className="relative aspect-[4/3] overflow-hidden bg-muted">
+        <div className="relative aspect-4/3 overflow-hidden bg-muted">
           {dish.imageUrl ? (
             <Image
               src={dish.imageUrl}
@@ -21,9 +21,7 @@ export function DishCard({ dish }: { dish: DishWithCategory }) {
               className="object-cover transition-transform duration-500 group-hover:scale-105"
             />
           ) : (
-            <div className="flex h-full items-center justify-center text-muted-foreground">
-              <UtensilsCrossed className="size-8" />
-            </div>
+            <ImagePlaceholder />
           )}
         </div>
         <CardContent className="space-y-1 p-4">

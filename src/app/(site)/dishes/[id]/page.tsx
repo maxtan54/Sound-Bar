@@ -1,10 +1,11 @@
-import { ArrowLeft, Flame, UtensilsCrossed } from "lucide-react";
+import { ArrowLeft, Flame } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { DishTags } from "@/components/menu/dish-tags";
+import { ImagePlaceholder } from "@/components/menu/image-placeholder";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { getDishById } from "@/db/queries";
@@ -43,7 +44,7 @@ export default async function DishPage({ params }: Props) {
         Back to {dish.category.name}
       </Link>
 
-      <div className="relative aspect-[16/10] overflow-hidden rounded-2xl border border-border/60 bg-muted shadow-lg shadow-black/30">
+      <div className="relative aspect-16/10 overflow-hidden rounded-2xl border border-border/60 bg-muted shadow-lg shadow-black/30">
         {dish.imageUrl ? (
           <Image
             src={dish.imageUrl}
@@ -54,9 +55,7 @@ export default async function DishPage({ params }: Props) {
             className="object-cover"
           />
         ) : (
-          <div className="flex h-full items-center justify-center text-muted-foreground">
-            <UtensilsCrossed className="size-12" />
-          </div>
+          <ImagePlaceholder iconClass="size-9" />
         )}
       </div>
 
