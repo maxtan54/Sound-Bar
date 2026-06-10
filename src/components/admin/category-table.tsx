@@ -37,7 +37,7 @@ export function CategoryTable({ categories }: { categories: Category[] }) {
   if (categories.length === 0) {
     return (
       <p className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
-        No categories yet. Create one to start building the menu.
+        No categories yet. Create one to start building the menu
       </p>
     );
   }
