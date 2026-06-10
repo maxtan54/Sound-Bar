@@ -14,14 +14,17 @@ export function CategoryNav({
 
   const pillClass = (active: boolean) =>
     cn(
-      "rounded-full border px-4 py-1.5 text-sm transition-colors",
+      "shrink-0 rounded-full border px-4 py-1.5 text-sm whitespace-nowrap transition-colors",
       active
-        ? "border-primary bg-primary text-primary-foreground"
-        : "bg-background text-muted-foreground hover:bg-accent",
+        ? "border-primary bg-primary font-medium text-primary-foreground"
+        : "border-border bg-card text-muted-foreground hover:border-primary/40 hover:text-foreground",
     );
 
   return (
-    <nav className="flex flex-wrap gap-2" aria-label="Menu categories">
+    <nav
+      className="flex justify-start gap-2 overflow-x-auto pb-2 sm:flex-wrap sm:justify-center sm:overflow-visible sm:pb-0"
+      aria-label="Menu categories"
+    >
       <Link href="/" className={pillClass(!activeSlug)}>
         All
       </Link>

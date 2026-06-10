@@ -34,7 +34,7 @@ export default async function DishPage({ params }: Props) {
   const dish = await getDishOr404(id);
 
   return (
-    <main className="mx-auto w-full max-w-3xl flex-1 space-y-6 p-4 md:p-6">
+    <div className="container mx-auto max-w-3xl space-y-6 px-4 py-8 md:py-12 animate-in fade-in duration-500">
       <Link
         href={`/?category=${dish.category.slug}`}
         className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
@@ -43,7 +43,7 @@ export default async function DishPage({ params }: Props) {
         Back to {dish.category.name}
       </Link>
 
-      <div className="relative aspect-[16/10] overflow-hidden rounded-xl bg-muted">
+      <div className="relative aspect-[16/10] overflow-hidden rounded-2xl border border-border/60 bg-muted shadow-lg shadow-black/30">
         {dish.imageUrl ? (
           <Image
             src={dish.imageUrl}
@@ -62,11 +62,13 @@ export default async function DishPage({ params }: Props) {
 
       <div className="space-y-4">
         <div className="flex flex-wrap items-start justify-between gap-3">
-          <div className="space-y-1">
+          <div className="space-y-2">
             <Badge variant="secondary">{dish.category.name}</Badge>
-            <h1 className="text-2xl font-bold tracking-tight">{dish.name}</h1>
+            <h1 className="font-serif text-3xl font-semibold tracking-tight">
+              {dish.name}
+            </h1>
           </div>
-          <span className="text-2xl font-semibold">
+          <span className="text-2xl font-bold text-primary">
             {formatPrice(dish.priceCents)}
           </span>
         </div>
@@ -90,7 +92,7 @@ export default async function DishPage({ params }: Props) {
             <div>
               <dt className="text-muted-foreground">Calories</dt>
               <dd className="flex items-center gap-1 font-medium">
-                <Flame className="size-3.5" />
+                <Flame className="size-3.5 text-primary" />
                 {dish.calories} kcal
               </dd>
             </div>
@@ -103,6 +105,6 @@ export default async function DishPage({ params }: Props) {
           )}
         </dl>
       </div>
-    </main>
+    </div>
   );
 }

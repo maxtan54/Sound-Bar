@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Playfair_Display } from "next/font/google";
 import "./globals.css";
+
+import { RESTAURANT_INFO } from "@/lib/restaurant";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -12,12 +14,17 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const playfair = Playfair_Display({
+  variable: "--font-playfair",
+  subsets: ["latin"],
+});
+
 export const metadata: Metadata = {
   title: {
-    default: "Our Menu",
-    template: "%s | Our Menu",
+    default: `${RESTAURANT_INFO.name} — Menu`,
+    template: `%s | ${RESTAURANT_INFO.name}`,
   },
-  description: "Browse our menu — dishes, prices, and details.",
+  description: `${RESTAURANT_INFO.name} — ${RESTAURANT_INFO.tagline}. Browse our menu: dishes, prices, and details.`,
 };
 
 export default function RootLayout({
@@ -28,9 +35,11 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="flex min-h-full flex-col bg-background text-foreground">
+        {children}
+      </body>
     </html>
   );
 }

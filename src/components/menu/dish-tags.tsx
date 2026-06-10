@@ -1,23 +1,19 @@
 import { Badge } from "@/components/ui/badge";
 
 const TAG_STYLES: Record<string, string> = {
-  vegan: "bg-green-100 text-green-800 border-green-200",
-  vegetarian: "bg-lime-100 text-lime-800 border-lime-200",
-  spicy: "bg-red-100 text-red-800 border-red-200",
-  "gluten-free": "bg-amber-100 text-amber-800 border-amber-200",
-  new: "bg-blue-100 text-blue-800 border-blue-200",
+  vegan: "border-green-500/30 bg-green-500/10 text-green-400",
+  vegetarian: "border-lime-500/30 bg-lime-500/10 text-lime-400",
+  spicy: "border-red-500/30 bg-red-500/10 text-red-400",
+  "gluten-free": "border-amber-500/30 bg-amber-500/10 text-amber-400",
+  new: "border-sky-500/30 bg-sky-500/10 text-sky-400",
 };
 
 export function DishTags({ tags }: { tags: string[] }) {
   if (tags.length === 0) return null;
   return (
-    <div className="flex flex-wrap gap-1">
+    <div className="flex flex-wrap gap-1 pt-1">
       {tags.map((tag) => (
-        <Badge
-          key={tag}
-          variant="outline"
-          className={TAG_STYLES[tag] ?? ""}
-        >
+        <Badge key={tag} variant="outline" className={TAG_STYLES[tag] ?? ""}>
           {tag}
         </Badge>
       ))}
