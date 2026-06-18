@@ -3,14 +3,14 @@
 import { Flame } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 import { RESTAURANT_INFO } from "@/lib/restaurant";
 import { cn } from "@/lib/utils";
 
-const links = [{ href: "/", label: "Menu" }];
-
 export function SiteHeader() {
   const pathname = usePathname();
+  const t = useTranslations("nav");
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-md">
@@ -22,20 +22,17 @@ export function SiteHeader() {
           </span>
         </Link>
         <nav className="flex items-center gap-1" aria-label="Main">
-          {links.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={cn(
-                "rounded-md px-3 py-2 text-sm transition-colors hover:text-foreground",
-                pathname === link.href
-                  ? "font-medium text-primary"
-                  : "text-muted-foreground",
-              )}
-            >
-              {link.label}
-            </Link>
-          ))}
+          <Link
+            href="/"
+            className={cn(
+              "rounded-md px-3 py-2 text-sm transition-colors hover:text-foreground",
+              pathname === "/"
+                ? "font-medium text-primary"
+                : "text-muted-foreground",
+            )}
+          >
+            {t("menu")}
+          </Link>
         </nav>
       </div>
     </header>

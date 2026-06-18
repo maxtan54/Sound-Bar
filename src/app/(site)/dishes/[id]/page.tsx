@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 
 import { DishTags } from "@/components/menu/dish-tags";
 import { ImagePlaceholder } from "@/components/menu/image-placeholder";
@@ -32,7 +33,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function DishPage({ params }: Props) {
   const { id } = await params;
-  const dish = await getDishOr404(id);
+  const [dish, t] = await Promise.all([getDishOr404(id), getTranslations("dish")]);
 
   return (
     <div className="container mx-auto max-w-3xl space-y-6 px-4 py-8 md:py-12 animate-in fade-in duration-500">
@@ -41,7 +42,7 @@ export default async function DishPage({ params }: Props) {
         className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
       >
         <ArrowLeft className="size-4" />
-        Back to {dish.category.name}
+        {t("backTo", { category: dish.category.name })}
       </Link>
 
       <div className="relative aspect-16/10 overflow-hidden rounded-2xl border border-border/60 bg-muted shadow-lg shadow-black/30">
@@ -82,23 +83,23 @@ export default async function DishPage({ params }: Props) {
 
         <dl className="grid grid-cols-2 gap-4 text-sm sm:grid-cols-3">
           <div>
-            <dt className="text-muted-foreground">Weight</dt>
+            <dt className="text-muted-foreground">{t("weight")}</dt>
             <dd className="font-medium">
               {dish.weight} {dish.weightUnit}
             </dd>
           </div>
           {dish.calories !== null && (
             <div>
-              <dt className="text-muted-foreground">Calories</dt>
+              <dt className="text-muted-foreground">{t("calories")}</dt>
               <dd className="flex items-center gap-1 font-medium">
                 <Flame className="size-3.5 text-primary" />
-                {dish.calories} kcal
+                {dish.calories} {t("kcal")}
               </dd>
             </div>
           )}
           {dish.allergens.length > 0 && (
             <div className="col-span-2 sm:col-span-1">
-              <dt className="text-muted-foreground">Allergens</dt>
+              <dt className="text-muted-foreground">{t("allergens")}</dt>
               <dd className="font-medium">{dish.allergens.join(", ")}</dd>
             </div>
           )}

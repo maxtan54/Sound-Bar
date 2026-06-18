@@ -1,0 +1,28 @@
+{
+  "nav": {
+    "menu": "Menu"
+  },
+  "hero": {
+    "label": "Restaurant"
+  },
+  "menu": {
+    "title": "Our Menu",
+    "subtitle": "Fresh dishes, made to order.",
+    "all": "All",
+    "emptyCategory": "No dishes in this category yet.",
+    "emptySoon": "The menu is coming soon — check back shortly."
+  },
+  "dish": {
+    "backTo": "Back to {category}",
+    "weight": "Weight",
+    "calories": "Calories",
+    "kcal": "kcal",
+    "allergens": "Allergens"
+  },
+  "footer": {
+    "navigation": "Navigation",
+    "contacts": "Contacts",
+    "menu": "Menu",
+    "rightsReserved": "All rights reserved."
+  }
+}

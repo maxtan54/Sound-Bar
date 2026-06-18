@@ -1,9 +1,10 @@
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 
 import { cn } from "@/lib/utils";
 import type { Category } from "@/types";
 
-export function CategoryNav({
+export async function CategoryNav({
   categories,
   activeSlug,
 }: {
@@ -11,6 +12,8 @@ export function CategoryNav({
   activeSlug?: string;
 }) {
   if (categories.length === 0) return null;
+
+  const t = await getTranslations("menu");
 
   const pillClass = (active: boolean) =>
     cn(
@@ -26,7 +29,7 @@ export function CategoryNav({
       aria-label="Menu categories"
     >
       <Link href="/" className={pillClass(!activeSlug)}>
-        All
+        {t("all")}
       </Link>
       {categories.map((category) => (
         <Link

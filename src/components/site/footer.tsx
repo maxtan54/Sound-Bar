@@ -1,9 +1,10 @@
 import { Clock, MapPin, Phone } from "lucide-react";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 
 import { RESTAURANT_INFO } from "@/lib/restaurant";
+import { LanguageSwitcher } from "./language-switcher";
 
-// lucide-react dropped brand icons, so these are inlined
 function InstagramIcon({ className }: { className?: string }) {
   return (
     <svg
@@ -40,7 +41,9 @@ function FacebookIcon({ className }: { className?: string }) {
   );
 }
 
-export function SiteFooter() {
+export async function SiteFooter() {
+  const t = await getTranslations("footer");
+
   return (
     <footer className="border-t border-border bg-card">
       <div className="container mx-auto grid gap-10 px-4 py-12 sm:grid-cols-2 lg:grid-cols-3">
@@ -75,21 +78,21 @@ export function SiteFooter() {
 
         <div className="space-y-3">
           <p className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
-            Navigation
+            {t("navigation")}
           </p>
           <nav className="flex flex-col gap-2" aria-label="Footer">
             <Link
               href="/"
               className="text-sm text-muted-foreground transition-colors hover:text-foreground"
             >
-              Menu
+              {t("menu")}
             </Link>
           </nav>
         </div>
 
         <div className="space-y-3">
           <p className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
-            Contacts
+            {t("contacts")}
           </p>
           <ul className="space-y-2 text-sm text-muted-foreground">
             <li className="flex items-start gap-2">
@@ -112,11 +115,15 @@ export function SiteFooter() {
           </ul>
         </div>
       </div>
+
       <div className="border-t border-border py-4">
-        <p className="text-center text-xs text-muted-foreground">
-          © {new Date().getFullYear()} {RESTAURANT_INFO.name}. All rights
-          reserved.
-        </p>
+        <div className="container mx-auto flex items-center justify-between px-4">
+          <p className="text-xs text-muted-foreground">
+            © {new Date().getFullYear()} {RESTAURANT_INFO.name}.{" "}
+            {t("rightsReserved")}
+          </p>
+          <LanguageSwitcher />
+        </div>
       </div>
     </footer>
   );

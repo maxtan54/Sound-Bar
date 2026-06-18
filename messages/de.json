@@ -1,0 +1,28 @@
+{
+  "nav": {
+    "menu": "Speisekarte"
+  },
+  "hero": {
+    "label": "Restaurant"
+  },
+  "menu": {
+    "title": "Unsere Speisekarte",
+    "subtitle": "Frische Gerichte, auf Bestellung.",
+    "all": "Alle",
+    "emptyCategory": "In dieser Kategorie gibt es noch keine Gerichte.",
+    "emptySoon": "Die Speisekarte erscheint bald — schau bald wieder vorbei."
+  },
+  "dish": {
+    "backTo": "Zurück zu {category}",
+    "weight": "Gewicht",
+    "calories": "Kalorien",
+    "kcal": "kcal",
+    "allergens": "Allergene"
+  },
+  "footer": {
+    "navigation": "Navigation",
+    "contacts": "Kontakt",
+    "menu": "Speisekarte",
+    "rightsReserved": "Alle Rechte vorbehalten."
+  }
+}
