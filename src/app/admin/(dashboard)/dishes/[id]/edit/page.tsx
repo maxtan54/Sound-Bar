@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 
 import { DishForm } from "@/components/admin/dish-form";
@@ -15,15 +16,16 @@ export default async function EditDishPage({
   const dishId = Number(id);
   if (!Number.isInteger(dishId)) notFound();
 
-  const [dish, categories] = await Promise.all([
+  const [dish, categories, t] = await Promise.all([
     getDishById(dishId),
     getCategories(),
+    getTranslations("admin.dish"),
   ]);
   if (!dish) notFound();
 
   return (
     <div className="space-y-4">
-      <h1 className="text-xl font-semibold">Edit dish</h1>
+      <h1 className="text-xl font-semibold">{t("editDish")}</h1>
       <DishForm dish={dish} categories={categories} />
     </div>
   );

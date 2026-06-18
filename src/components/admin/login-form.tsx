@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useActionState } from "react";
 
 import { login, type LoginState } from "@/actions/auth";
@@ -12,11 +13,12 @@ export function LoginForm() {
     login,
     null,
   );
+  const t = useTranslations("admin.login");
 
   return (
     <form action={formAction} className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
+        <Label htmlFor="email">{t("email")}</Label>
         <Input
           id="email"
           name="email"
@@ -26,7 +28,7 @@ export function LoginForm() {
         />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="password">Password</Label>
+        <Label htmlFor="password">{t("password")}</Label>
         <Input
           id="password"
           name="password"
@@ -41,7 +43,7 @@ export function LoginForm() {
         </p>
       )}
       <Button type="submit" className="w-full" disabled={isPending}>
-        {isPending ? "Signing in…" : "Sign in"}
+        {isPending ? t("signingIn") : t("signIn")}
       </Button>
     </form>
   );

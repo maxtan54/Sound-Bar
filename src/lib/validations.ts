@@ -26,7 +26,7 @@ export const dishSchema = z.object({
   priceCents: z.number().int().positive("Price must be greater than zero"),
   calories: z.number().int().positive().nullable(),
   allergens: z.array(z.string().trim().min(1)).default([]),
-  tags: z.array(z.enum(DISH_TAGS)).default([]),
+  tags: z.array(z.string().trim().min(1)).default([]),
   isAvailable: z.boolean().default(true),
 });
 export type DishInput = z.infer<typeof dishSchema>;
@@ -47,7 +47,7 @@ export const dishFormSchema = z.object({
     .regex(/^\d+(\.\d{1,2})?$/, "Enter a price like 12.50"),
   calories: z.string().regex(/^\d*$/, "Enter a whole number"),
   allergens: z.string(),
-  tags: z.array(z.enum(DISH_TAGS)),
+  tags: z.array(z.string().trim().min(1)),
   isAvailable: z.boolean(),
 });
 export type DishFormValues = z.infer<typeof dishFormSchema>;

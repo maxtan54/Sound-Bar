@@ -2,7 +2,10 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
+import { X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
+import { useRef } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -43,6 +46,8 @@ export function DishForm({
   categories: Category[];
 }) {
   const router = useRouter();
+  const t = useTranslations("admin.dish");
+  const customTagInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<DishFormValues>({
     resolver: zodResolver(dishFormSchema),
@@ -57,9 +62,7 @@ export function DishForm({
           price: (dish.priceCents / 100).toFixed(2),
           calories: dish.calories ? String(dish.calories) : "",
           allergens: dish.allergens.join(", "),
-          tags: dish.tags.filter((t): t is DishFormValues["tags"][number] =>
-            (DISH_TAGS as readonly string[]).includes(t),
-          ),
+          tags: dish.tags,
           isAvailable: dish.isAvailable,
         }
       : {
@@ -86,7 +89,7 @@ export function DishForm({
       if (!result.success) throw new Error(result.error);
     },
     onSuccess: () => {
-      toast.success(dish ? "Dish updated" : "Dish created");
+      toast.success(dish ? t("updated") : t("created"));
       router.push("/admin/dishes");
       router.refresh();
     },
@@ -95,25 +98,34 @@ export function DishForm({
 
   const { errors } = form.formState;
 
+  function addCustomTag(currentTags: string[], onChange: (v: string[]) => void) {
+    const raw = customTagInputRef.current?.value.trim().toLowerCase() ?? "";
+    if (!raw) return;
+    if (!currentTags.includes(raw)) {
+      onChange([...currentTags, raw]);
+    }
+    if (customTagInputRef.current) customTagInputRef.current.value = "";
+  }
+
   return (
     <form
       onSubmit={form.handleSubmit((values) => mutation.mutate(values))}
       className="max-w-2xl space-y-6"
     >
       <div className="space-y-2">
-        <Label htmlFor="name">Name</Label>
+        <Label htmlFor="name">{t("nameLabel")}</Label>
         <Input id="name" {...form.register("name")} />
         <FieldError message={errors.name?.message} />
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="description">Description</Label>
+        <Label htmlFor="description">{t("descriptionLabel")}</Label>
         <Textarea id="description" rows={3} {...form.register("description")} />
         <FieldError message={errors.description?.message} />
       </div>
 
       <div className="space-y-2">
-        <Label>Photo</Label>
+        <Label>{t("photoLabel")}</Label>
         <Controller
           control={form.control}
           name="imageUrl"
@@ -125,14 +137,14 @@ export function DishForm({
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
-          <Label>Category</Label>
+          <Label>{t("categoryLabel")}</Label>
           <Controller
             control={form.control}
             name="categoryId"
             render={({ field }) => (
               <Select value={field.value} onValueChange={field.onChange}>
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select a category" />
+                  <SelectValue placeholder={t("categoryPlaceholder")} />
                 </SelectTrigger>
                 <SelectContent>
                   {categories.map((category) => (
@@ -148,13 +160,13 @@ export function DishForm({
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="price">Price ($)</Label>
+          <Label htmlFor="price">{t("priceLabel")}</Label>
           <Input id="price" inputMode="decimal" placeholder="12.50" {...form.register("price")} />
           <FieldError message={errors.price?.message} />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="weight">Weight / volume</Label>
+          <Label htmlFor="weight">{t("weightLabel")}</Label>
           <div className="flex gap-2">
             <Input
               id="weight"
@@ -182,51 +194,94 @@ export function DishForm({
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="calories">Calories (optional)</Label>
+          <Label htmlFor="calories">{t("caloriesLabel")}</Label>
           <Input id="calories" inputMode="numeric" {...form.register("calories")} />
           <FieldError message={errors.calories?.message} />
         </div>
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="allergens">Allergens (comma-separated, optional)</Label>
+        <Label htmlFor="allergens">{t("allergensLabel")}</Label>
         <Input
           id="allergens"
-          placeholder="nuts, dairy, gluten"
+          placeholder={t("allergensPlaceholder")}
           {...form.register("allergens")}
         />
       </div>
 
       <div className="space-y-2">
-        <Label>Tags</Label>
+        <Label>{t("tagsLabel")}</Label>
         <Controller
           control={form.control}
           name="tags"
           render={({ field }) => (
-            <div className="flex flex-wrap gap-2">
-              {DISH_TAGS.map((tag) => {
-                const active = field.value.includes(tag);
-                return (
-                  <button
-                    key={tag}
-                    type="button"
-                    onClick={() =>
-                      field.onChange(
-                        active
-                          ? field.value.filter((t) => t !== tag)
-                          : [...field.value, tag],
-                      )
-                    }
-                  >
-                    <Badge
-                      variant={active ? "default" : "outline"}
-                      className={cn("cursor-pointer", !active && "text-muted-foreground")}
+            <div className="space-y-3">
+              <div className="flex flex-wrap gap-2">
+                {DISH_TAGS.map((tag) => {
+                  const active = field.value.includes(tag);
+                  return (
+                    <button
+                      key={tag}
+                      type="button"
+                      onClick={() =>
+                        field.onChange(
+                          active
+                            ? field.value.filter((t) => t !== tag)
+                            : [...field.value, tag],
+                        )
+                      }
                     >
-                      {tag}
-                    </Badge>
-                  </button>
-                );
-              })}
+                      <Badge
+                        variant={active ? "default" : "outline"}
+                        className={cn("cursor-pointer", !active && "text-muted-foreground")}
+                      >
+                        {tag}
+                      </Badge>
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="flex gap-2">
+                <Input
+                  ref={customTagInputRef}
+                  placeholder="Add custom tag…"
+                  className="max-w-56"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      addCustomTag(field.value, field.onChange);
+                    }
+                  }}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => addCustomTag(field.value, field.onChange)}
+                >
+                  Add
+                </Button>
+              </div>
+
+              {field.value.filter((t) => !(DISH_TAGS as readonly string[]).includes(t)).length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {field.value
+                    .filter((t) => !(DISH_TAGS as readonly string[]).includes(t))
+                    .map((tag) => (
+                      <Badge key={tag} variant="secondary" className="gap-1 pr-1">
+                        {tag}
+                        <button
+                          type="button"
+                          className="ml-0.5 rounded-sm opacity-60 hover:opacity-100"
+                          onClick={() => field.onChange(field.value.filter((t) => t !== tag))}
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </Badge>
+                    ))}
+                </div>
+              )}
             </div>
           )}
         />
@@ -244,23 +299,23 @@ export function DishForm({
             />
           )}
         />
-        <Label htmlFor="isAvailable">Visible on the public menu</Label>
+        <Label htmlFor="isAvailable">{t("visibleLabel")}</Label>
       </div>
 
       <div className="flex gap-3">
         <Button type="submit" disabled={mutation.isPending}>
           {mutation.isPending
-            ? "Saving…"
+            ? t("saving")
             : dish
-              ? "Save changes"
-              : "Create dish"}
+              ? t("saveChanges")
+              : t("createDish")}
         </Button>
         <Button
           type="button"
           variant="outline"
           onClick={() => router.push("/admin/dishes")}
         >
-          Cancel
+          {t("cancel")}
         </Button>
       </div>
     </form>

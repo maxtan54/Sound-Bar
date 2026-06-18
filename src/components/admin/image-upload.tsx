@@ -2,6 +2,7 @@
 
 import { useMutation } from "@tanstack/react-query";
 import { ImagePlus, Loader2, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useRef } from "react";
 import { toast } from "sonner";
@@ -17,6 +18,7 @@ export function ImageUpload({
   onChange: (url: string) => void;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const t = useTranslations("admin.common");
 
   const upload = useMutation({
     mutationFn: async (file: File) => {
@@ -57,7 +59,7 @@ export function ImageUpload({
             variant="secondary"
             size="icon-xs"
             className="absolute right-1 top-1"
-            aria-label="Remove image"
+            aria-label={t("removeImage")}
             onClick={() => onChange("")}
           >
             <X />
@@ -75,11 +77,11 @@ export function ImageUpload({
           ) : (
             <ImagePlus className="size-5" />
           )}
-          {upload.isPending ? "Uploading…" : "Upload photo"}
+          {upload.isPending ? t("uploading") : t("uploadPhoto")}
         </button>
       )}
       <p className="text-xs text-muted-foreground">
-        JPEG, PNG or WebP, up to 4 MB.
+        {t("imageFormat")}
       </p>
     </div>
   );

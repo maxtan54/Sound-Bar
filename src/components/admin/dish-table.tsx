@@ -2,6 +2,7 @@
 
 import { useMutation } from "@tanstack/react-query";
 import { ImageOff, Pencil, Trash2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -24,6 +25,7 @@ import type { DishWithCategory } from "@/types";
 
 export function DishTable({ dishes }: { dishes: DishWithCategory[] }) {
   const router = useRouter();
+  const t = useTranslations("admin.dish");
 
   const toggleMutation = useMutation({
     mutationFn: async (args: { id: number; isAvailable: boolean }) => {
@@ -40,7 +42,7 @@ export function DishTable({ dishes }: { dishes: DishWithCategory[] }) {
       if (!result.success) throw new Error(result.error);
     },
     onSuccess: () => {
-      toast.success("Dish deleted");
+      toast.success(t("deleted"));
       router.refresh();
     },
     onError: (error) => toast.error(error.message),
@@ -49,7 +51,7 @@ export function DishTable({ dishes }: { dishes: DishWithCategory[] }) {
   if (dishes.length === 0) {
     return (
       <p className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
-        No dishes yet. Add your first dish to populate the menu.
+        {t("empty")}
       </p>
     );
   }
@@ -60,11 +62,11 @@ export function DishTable({ dishes }: { dishes: DishWithCategory[] }) {
         <TableHeader>
           <TableRow>
             <TableHead className="w-16" />
-            <TableHead>Name</TableHead>
-            <TableHead>Category</TableHead>
-            <TableHead>Price</TableHead>
-            <TableHead className="w-24">Visible</TableHead>
-            <TableHead className="w-24 text-right">Actions</TableHead>
+            <TableHead>{t("colName")}</TableHead>
+            <TableHead>{t("colCategory")}</TableHead>
+            <TableHead>{t("colPrice")}</TableHead>
+            <TableHead className="w-24">{t("colVisible")}</TableHead>
+            <TableHead className="w-24 text-right">{t("colActions")}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -99,7 +101,7 @@ export function DishTable({ dishes }: { dishes: DishWithCategory[] }) {
                   onCheckedChange={(checked) =>
                     toggleMutation.mutate({ id: dish.id, isAvailable: checked })
                   }
-                  aria-label={`Toggle ${dish.name} visibility`}
+                  aria-label={dish.name}
                 />
               </TableCell>
               <TableCell className="text-right">
@@ -107,21 +109,21 @@ export function DishTable({ dishes }: { dishes: DishWithCategory[] }) {
                   <Button variant="ghost" size="icon-sm" asChild>
                     <Link
                       href={`/admin/dishes/${dish.id}/edit`}
-                      aria-label="Edit"
+                      aria-label={t("colActions")}
                     >
                       <Pencil />
                     </Link>
                   </Button>
                   <DeleteConfirmDialog
-                    title={`Delete “${dish.name}”?`}
-                    description="This permanently removes the dish from the menu."
+                    title={t("deleteTitle", { name: dish.name })}
+                    description={t("deleteDescription")}
                     onConfirm={() => deleteMutation.mutate(dish.id)}
                     disabled={deleteMutation.isPending}
                   >
                     <Button
                       variant="ghost"
                       size="icon-sm"
-                      aria-label="Delete"
+                      aria-label={t("colActions")}
                       className="text-destructive hover:text-destructive"
                     >
                       <Trash2 />

@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,6 +27,8 @@ export function DeleteConfirmDialog({
   disabled?: boolean;
   children: React.ReactNode;
 }) {
+  const t = useTranslations("admin.common");
+
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
@@ -34,13 +38,13 @@ export function DeleteConfirmDialog({
           <AlertDialogDescription>{description}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
           <AlertDialogAction
             onClick={onConfirm}
             disabled={disabled}
             className="bg-destructive text-white hover:bg-destructive/90"
           >
-            Delete
+            {t("delete")}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

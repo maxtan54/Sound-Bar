@@ -2,6 +2,7 @@
 
 import { useMutation } from "@tanstack/react-query";
 import { Pencil, Trash2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
@@ -21,6 +22,7 @@ import type { Category } from "@/types";
 
 export function CategoryTable({ categories }: { categories: Category[] }) {
   const router = useRouter();
+  const t = useTranslations("admin.category");
 
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => {
@@ -28,7 +30,7 @@ export function CategoryTable({ categories }: { categories: Category[] }) {
       if (!result.success) throw new Error(result.error);
     },
     onSuccess: () => {
-      toast.success("Category deleted");
+      toast.success(t("deleted"));
       router.refresh();
     },
     onError: (error) => toast.error(error.message),
@@ -37,7 +39,7 @@ export function CategoryTable({ categories }: { categories: Category[] }) {
   if (categories.length === 0) {
     return (
       <p className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
-        No categories yet. Create one to start building the menu.
+        {t("empty")}
       </p>
     );
   }
@@ -47,10 +49,10 @@ export function CategoryTable({ categories }: { categories: Category[] }) {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Name</TableHead>
-            <TableHead>Slug</TableHead>
-            <TableHead className="w-28">Sort order</TableHead>
-            <TableHead className="w-24 text-right">Actions</TableHead>
+            <TableHead>{t("colName")}</TableHead>
+            <TableHead>{t("colSlug")}</TableHead>
+            <TableHead className="w-28">{t("colSortOrder")}</TableHead>
+            <TableHead className="w-24 text-right">{t("colActions")}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -64,20 +66,20 @@ export function CategoryTable({ categories }: { categories: Category[] }) {
               <TableCell className="text-right">
                 <div className="flex justify-end gap-1">
                   <CategoryFormDialog category={category}>
-                    <Button variant="ghost" size="icon-sm" aria-label="Edit">
+                    <Button variant="ghost" size="icon-sm" aria-label={t("colActions")}>
                       <Pencil />
                     </Button>
                   </CategoryFormDialog>
                   <DeleteConfirmDialog
-                    title={`Delete “${category.name}”?`}
-                    description="Dishes in this category must be moved or deleted first."
+                    title={t("deleteTitle", { name: category.name })}
+                    description={t("deleteDescription")}
                     onConfirm={() => deleteMutation.mutate(category.id)}
                     disabled={deleteMutation.isPending}
                   >
                     <Button
                       variant="ghost"
                       size="icon-sm"
-                      aria-label="Delete"
+                      aria-label={t("colActions")}
                       className="text-destructive hover:text-destructive"
                     >
                       <Trash2 />
