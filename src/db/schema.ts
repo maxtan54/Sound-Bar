@@ -1,9 +1,9 @@
-import { sql } from "drizzle-orm";
 import {
   boolean,
   integer,
   pgEnum,
   pgTable,
+  primaryKey,
   text,
   timestamp,
 } from "drizzle-orm/pg-core";
@@ -43,12 +43,8 @@ export const dishes = pgTable("dishes", {
   allergens: text("allergens")
     .array()
     .notNull()
-    .default(sql`'{}'::text[]`),
+    .default([]),
   calories: integer("calories"),
-  tags: text("tags")
-    .array()
-    .notNull()
-    .default(sql`'{}'::text[]`),
   isAvailable: boolean("is_available").notNull().default(true),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
@@ -58,3 +54,16 @@ export const dishes = pgTable("dishes", {
     .defaultNow()
     .$onUpdate(() => new Date()),
 });
+
+export const dishTags = pgTable(
+  "dish_tags",
+  {
+    dishId: integer("dish_id")
+      .notNull()
+      .references(() => dishes.id, { onDelete: "cascade" }),
+    tagId: integer("tag_id")
+      .notNull()
+      .references(() => customTags.id, { onDelete: "cascade" }),
+  },
+  (t) => [primaryKey({ columns: [t.dishId, t.tagId] })],
+);

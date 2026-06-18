@@ -15,6 +15,13 @@
       "when": 1781818683392,
       "tag": "0001_smiling_madame_hydra",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1781819586634,
+      "tag": "0002_striped_giant_girl",
+      "breakpoints": true
     }
   ]
 }

@@ -2,8 +2,9 @@ import type { InferSelectModel } from "drizzle-orm";
 
 import type { categories, dishes } from "@/db/schema";
 
+type DishRow = InferSelectModel<typeof dishes>;
 export type Category = InferSelectModel<typeof categories>;
-export type Dish = InferSelectModel<typeof dishes>;
+export type Dish = DishRow & { tags: string[] };
 
 export type DishWithCategory = Dish & { category: Category };
 

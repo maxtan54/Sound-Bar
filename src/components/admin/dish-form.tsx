@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { X } from "lucide-react";
+import { Pencil, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
@@ -10,7 +10,7 @@ import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 import { createDish, updateDish } from "@/actions/dishes";
-import { createCustomTag } from "@/actions/tags";
+import { createCustomTag, deleteCustomTag, updateCustomTag } from "@/actions/tags";
 import { ImageUpload } from "@/components/admin/image-upload";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -51,6 +51,8 @@ export function DishForm({
   const t = useTranslations("admin.dish");
   const customTagInputRef = useRef<HTMLInputElement>(null);
   const [persistedTags, setPersistedTags] = useState<string[]>(initialCustomTags);
+  const [editingTag, setEditingTag] = useState<string | null>(null);
+  const editTagInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<DishFormValues>({
     resolver: zodResolver(dishFormSchema),
@@ -114,6 +116,23 @@ export function DishForm({
         setPersistedTags((prev) => [...prev, raw].sort());
       }
     }
+  }
+
+  async function handleDeleteTag(tag: string, selectedTags: string[], onChange: (v: string[]) => void) {
+    const result = await deleteCustomTag(tag);
+    if (!result.success) { toast.error(result.error); return; }
+    setPersistedTags((prev) => prev.filter((t) => t !== tag));
+    if (selectedTags.includes(tag)) onChange(selectedTags.filter((t) => t !== tag));
+  }
+
+  async function handleRenameTag(oldName: string, selectedTags: string[], onChange: (v: string[]) => void) {
+    const newName = editTagInputRef.current?.value.trim().toLowerCase() ?? "";
+    if (!newName || newName === oldName) { setEditingTag(null); return; }
+    const result = await updateCustomTag(oldName, newName);
+    if (!result.success) { toast.error(result.error); return; }
+    setPersistedTags((prev) => prev.map((t) => (t === oldName ? newName : t)).sort());
+    if (selectedTags.includes(oldName)) onChange(selectedTags.map((t) => (t === oldName ? newName : t)));
+    setEditingTag(null);
   }
 
   return (
@@ -228,25 +247,62 @@ export function DishForm({
               <div className="flex flex-wrap gap-2">
                 {persistedTags.map((tag) => {
                   const active = field.value.includes(tag);
+                  if (editingTag === tag) {
+                    return (
+                      <div key={tag} className="flex items-center gap-1">
+                        <Input
+                          ref={editTagInputRef}
+                          defaultValue={tag}
+                          className="h-6 w-32 px-2 text-xs"
+                          autoFocus
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") { e.preventDefault(); handleRenameTag(tag, field.value, field.onChange); }
+                            if (e.key === "Escape") setEditingTag(null);
+                          }}
+                        />
+                        <Button type="button" size="sm" className="h-6 px-2 text-xs" onClick={() => handleRenameTag(tag, field.value, field.onChange)}>
+                          Save
+                        </Button>
+                        <button type="button" className="opacity-60 hover:opacity-100" onClick={() => setEditingTag(null)}>
+                          <X className="h-3 w-3" />
+                        </button>
+                      </div>
+                    );
+                  }
                   return (
-                    <button
-                      key={tag}
-                      type="button"
-                      onClick={() =>
-                        field.onChange(
-                          active
-                            ? field.value.filter((t) => t !== tag)
-                            : [...field.value, tag],
-                        )
-                      }
-                    >
-                      <Badge
-                        variant={active ? "default" : "outline"}
-                        className={cn("cursor-pointer", !active && "text-muted-foreground")}
+                    <div key={tag} className="flex items-center gap-0.5 group">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          field.onChange(
+                            active
+                              ? field.value.filter((t) => t !== tag)
+                              : [...field.value, tag],
+                          )
+                        }
                       >
-                        {tag}
-                      </Badge>
-                    </button>
+                        <Badge
+                          variant={active ? "default" : "outline"}
+                          className={cn("cursor-pointer", !active && "text-muted-foreground")}
+                        >
+                          {tag}
+                        </Badge>
+                      </button>
+                      <button
+                        type="button"
+                        className="opacity-0 group-hover:opacity-60 hover:!opacity-100 transition-opacity"
+                        onClick={() => setEditingTag(tag)}
+                      >
+                        <Pencil className="h-3 w-3" />
+                      </button>
+                      <button
+                        type="button"
+                        className="opacity-0 group-hover:opacity-60 hover:!opacity-100 transition-opacity"
+                        onClick={() => handleDeleteTag(tag, field.value, field.onChange)}
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
                   );
                 })}
               </div>

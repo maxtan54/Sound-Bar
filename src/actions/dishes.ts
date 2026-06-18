@@ -1,11 +1,11 @@
 "use server";
 
-import { eq } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 import { requireAdmin } from "@/auth";
 import { db } from "@/db";
-import { dishes } from "@/db/schema";
+import { customTags, dishTags, dishes } from "@/db/schema";
 import { dishSchema } from "@/lib/validations";
 import type { ActionResult } from "@/types";
 
@@ -13,6 +13,22 @@ function revalidateMenu(dishId?: number) {
   revalidatePath("/");
   revalidatePath("/admin/dishes");
   if (dishId !== undefined) revalidatePath(`/dishes/${dishId}`);
+}
+
+type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
+
+async function syncDishTags(tx: Tx, dishId: number, tagNames: string[]) {
+  await tx.delete(dishTags).where(eq(dishTags.dishId, dishId));
+  if (tagNames.length === 0) return;
+
+  const tagRows = await tx
+    .select({ id: customTags.id })
+    .from(customTags)
+    .where(inArray(customTags.name, tagNames));
+
+  if (tagRows.length > 0) {
+    await tx.insert(dishTags).values(tagRows.map(({ id: tagId }) => ({ dishId, tagId })));
+  }
 }
 
 export async function createDish(input: unknown): Promise<ActionResult> {
@@ -23,8 +39,13 @@ export async function createDish(input: unknown): Promise<ActionResult> {
     return { success: false, error: parsed.error.issues[0].message };
   }
 
+  const { tags, ...dishData } = parsed.data;
+
   try {
-    await db.insert(dishes).values(parsed.data);
+    await db.transaction(async (tx) => {
+      const [newDish] = await tx.insert(dishes).values(dishData).returning({ id: dishes.id });
+      await syncDishTags(tx, newDish.id, tags);
+    });
   } catch {
     return { success: false, error: "Failed to create dish" };
   }
@@ -44,8 +65,13 @@ export async function updateDish(
     return { success: false, error: parsed.error.issues[0].message };
   }
 
+  const { tags, ...dishData } = parsed.data;
+
   try {
-    await db.update(dishes).set(parsed.data).where(eq(dishes.id, id));
+    await db.transaction(async (tx) => {
+      await tx.update(dishes).set(dishData).where(eq(dishes.id, id));
+      await syncDishTags(tx, id, tags);
+    });
   } catch {
     return { success: false, error: "Failed to update dish" };
   }
