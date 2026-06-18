@@ -28,9 +28,11 @@ export default async function MenuPage({
         />
         <div aria-hidden className="absolute inset-0 -z-20 bg-black/50" />
         <div className="container mx-auto px-4 py-20 text-center md:py-28 animate-in fade-in slide-in-from-bottom-4 duration-700">
-          <p className="text-sm font-medium uppercase tracking-[0.3em] text-primary">
-            {tHero("label")}
-          </p>
+          {tHero("label") && (
+            <p className="text-sm font-medium uppercase tracking-[0.3em] text-primary">
+              {tHero("label")}
+            </p>
+          )}
           <h1 className="mt-4 font-serif text-4xl font-semibold tracking-tight md:text-6xl">
             {RESTAURANT_INFO.name}
           </h1>
