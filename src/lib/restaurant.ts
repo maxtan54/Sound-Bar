@@ -1,9 +1,7 @@
 export const RESTAURANT_INFO = {
   name: "Sound-Bar",
-  tagline: "Flavors that linger",
-  address: "12 Korzo Street, Uzhhorod",
-  phone: "+380 50 123 45 67",
-  hours: "Mon–Sun: 11:00 – 22:00",
-  instagram: "https://instagram.com/soundbar",
-  facebook: "https://facebook.com/soundbar",
+  tagline: "Live Music - Good Vibes",
+  address: "Nadorster Str. 67, 26123 Oldenburg",
+  phone: "01523 1381175",
+  instagram: "https://www.instagram.com/sound.bar.26123?igsh=MTg5OGVmdWlyOTJydg%3D%3D",
 } as const;

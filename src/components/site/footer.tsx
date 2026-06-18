@@ -1,4 +1,4 @@
-import { Clock, MapPin, Phone } from "lucide-react";
+import { MapPin, Phone } from "lucide-react";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 
@@ -24,22 +24,6 @@ function InstagramIcon({ className }: { className?: string }) {
   );
 }
 
-function FacebookIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden
-    >
-      <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
-    </svg>
-  );
-}
 
 export async function SiteFooter() {
   const t = await getTranslations("footer");
@@ -63,15 +47,6 @@ export async function SiteFooter() {
               className="text-muted-foreground transition-colors hover:text-primary"
             >
               <InstagramIcon className="size-5" />
-            </a>
-            <a
-              href={RESTAURANT_INFO.facebook}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Facebook"
-              className="text-muted-foreground transition-colors hover:text-primary"
-            >
-              <FacebookIcon className="size-5" />
             </a>
           </div>
         </div>
@@ -107,10 +82,6 @@ export async function SiteFooter() {
               >
                 {RESTAURANT_INFO.phone}
               </a>
-            </li>
-            <li className="flex items-center gap-2">
-              <Clock className="size-4 shrink-0 text-primary" />
-              {RESTAURANT_INFO.hours}
             </li>
           </ul>
         </div>
