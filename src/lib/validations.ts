@@ -1,14 +1,5 @@
 import { z } from "zod";
 
-export const DISH_TAGS = [
-  "vegan",
-  "vegetarian",
-  "spicy",
-  "gluten-free",
-  "new",
-] as const;
-export type DishTag = (typeof DISH_TAGS)[number];
-
 export const categorySchema = z.object({
   name: z.string().trim().min(1, "Name is required").max(100),
   sortOrder: z.number().int().min(0).default(0),

@@ -1,8 +1,16 @@
 import { and, asc, eq } from "drizzle-orm";
 
 import { db } from "@/db";
-import { categories, dishes } from "@/db/schema";
+import { categories, customTags, dishes } from "@/db/schema";
 import type { Category, DishWithCategory } from "@/types";
+
+export async function getCustomTags(): Promise<string[]> {
+  const rows = await db
+    .select({ name: customTags.name })
+    .from(customTags)
+    .orderBy(asc(customTags.name));
+  return rows.map((r) => r.name);
+}
 
 export async function getCategories(): Promise<Category[]> {
   return db

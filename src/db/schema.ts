@@ -20,6 +20,14 @@ export const categories = pgTable("categories", {
     .defaultNow(),
 });
 
+export const customTags = pgTable("custom_tags", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  name: text("name").notNull().unique(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});
+
 export const dishes = pgTable("dishes", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
   categoryId: integer("category_id")

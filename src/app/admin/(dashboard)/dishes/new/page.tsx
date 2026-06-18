@@ -2,13 +2,14 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 
 import { DishForm } from "@/components/admin/dish-form";
-import { getCategories } from "@/db/queries";
+import { getCategories, getCustomTags } from "@/db/queries";
 
 export const metadata: Metadata = { title: "New Dish — Admin" };
 
 export default async function NewDishPage() {
-  const [categories, t] = await Promise.all([
+  const [categories, customTags, t] = await Promise.all([
     getCategories(),
+    getCustomTags(),
     getTranslations("admin.dish"),
   ]);
 
@@ -20,7 +21,7 @@ export default async function NewDishPage() {
           {t("noCategoryYet")}
         </p>
       ) : (
-        <DishForm categories={categories} />
+        <DishForm categories={categories} customTags={customTags} />
       )}
     </div>
   );

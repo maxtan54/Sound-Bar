@@ -5,11 +5,12 @@ import { useMutation } from "@tanstack/react-query";
 import { X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 import { createDish, updateDish } from "@/actions/dishes";
+import { createCustomTag } from "@/actions/tags";
 import { ImageUpload } from "@/components/admin/image-upload";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -26,7 +27,6 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import {
-  DISH_TAGS,
   dishFormSchema,
   dishFormToInput,
   type DishFormValues,
@@ -41,13 +41,16 @@ function FieldError({ message }: { message?: string }) {
 export function DishForm({
   dish,
   categories,
+  customTags: initialCustomTags = [],
 }: {
   dish?: Dish;
   categories: Category[];
+  customTags?: string[];
 }) {
   const router = useRouter();
   const t = useTranslations("admin.dish");
   const customTagInputRef = useRef<HTMLInputElement>(null);
+  const [persistedTags, setPersistedTags] = useState<string[]>(initialCustomTags);
 
   const form = useForm<DishFormValues>({
     resolver: zodResolver(dishFormSchema),
@@ -98,13 +101,19 @@ export function DishForm({
 
   const { errors } = form.formState;
 
-  function addCustomTag(currentTags: string[], onChange: (v: string[]) => void) {
+  async function addCustomTag(currentTags: string[], onChange: (v: string[]) => void) {
     const raw = customTagInputRef.current?.value.trim().toLowerCase() ?? "";
     if (!raw) return;
     if (!currentTags.includes(raw)) {
       onChange([...currentTags, raw]);
     }
     if (customTagInputRef.current) customTagInputRef.current.value = "";
+    if (!persistedTags.includes(raw)) {
+      const result = await createCustomTag(raw);
+      if (result.success) {
+        setPersistedTags((prev) => [...prev, raw].sort());
+      }
+    }
   }
 
   return (
@@ -217,7 +226,7 @@ export function DishForm({
           render={({ field }) => (
             <div className="space-y-3">
               <div className="flex flex-wrap gap-2">
-                {DISH_TAGS.map((tag) => {
+                {persistedTags.map((tag) => {
                   const active = field.value.includes(tag);
                   return (
                     <button
@@ -264,10 +273,10 @@ export function DishForm({
                 </Button>
               </div>
 
-              {field.value.filter((t) => !(DISH_TAGS as readonly string[]).includes(t)).length > 0 && (
+              {field.value.filter((t) => !persistedTags.includes(t)).length > 0 && (
                 <div className="flex flex-wrap gap-2">
                   {field.value
-                    .filter((t) => !(DISH_TAGS as readonly string[]).includes(t))
+                    .filter((t) => !persistedTags.includes(t))
                     .map((tag) => (
                       <Badge key={tag} variant="secondary" className="gap-1 pr-1">
                         {tag}
