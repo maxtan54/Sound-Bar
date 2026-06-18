@@ -2,32 +2,34 @@
 
 import { useTransition } from "react";
 import { useLocale } from "next-intl";
-import { usePathname, useRouter } from "@/i18n/navigation";
+import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { setLocale } from "@/actions/locale";
+
+const LOCALES = ["de", "en"] as const;
 
 export function LanguageSwitcher() {
   const locale = useLocale();
   const router = useRouter();
-  const pathname = usePathname();
   const [isPending, startTransition] = useTransition();
 
   const switchLocale = (next: string) => {
-    startTransition(() => {
-      router.replace(pathname, { locale: next });
+    startTransition(async () => {
+      await setLocale(next);
+      router.refresh();
     });
   };
 
   return (
     <div className="flex items-center gap-0.5">
-      {(["de", "en"] as const).map((l, i) => (
-        <>
+      {LOCALES.map((l, i) => (
+        <span key={l} className="flex items-center gap-0.5">
           {i > 0 && (
-            <span key={`sep-${l}`} className="text-muted-foreground/50 text-xs select-none">
+            <span className="text-muted-foreground/50 text-xs select-none px-0.5">
               |
             </span>
           )}
           <button
-            key={l}
             onClick={() => switchLocale(l)}
             disabled={isPending || locale === l}
             className={cn(
@@ -39,7 +41,7 @@ export function LanguageSwitcher() {
           >
             {l.toUpperCase()}
           </button>
-        </>
+        </span>
       ))}
     </div>
   );
